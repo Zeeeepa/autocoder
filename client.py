@@ -342,6 +342,7 @@ def create_client(
     is_vertex = sdk_env.get("CLAUDE_CODE_USE_VERTEX") == "1"
     is_alternative_api = bool(base_url) or is_vertex
     is_ollama = "localhost:11434" in base_url or "127.0.0.1:11434" in base_url
+    is_azure = "services.ai.azure.com" in base_url
     model = convert_model_for_vertex(model)
     if sdk_env:
         print(f"   - API overrides: {', '.join(sdk_env.keys())}")
@@ -351,8 +352,10 @@ def create_client(
             print(f"   - Vertex AI Mode: Using GCP project '{project_id}' with model '{model}' in region '{region}'")
         elif is_ollama:
             print("   - Ollama Mode: Using local models")
+        elif is_azure:
+            print(f"   - Azure Mode: Using {base_url}")
         elif "ANTHROPIC_BASE_URL" in sdk_env:
-            print(f"   - GLM Mode: Using {sdk_env['ANTHROPIC_BASE_URL']}")
+            print(f"   - Alternative API: Using {sdk_env['ANTHROPIC_BASE_URL']}")
 
     # Create a wrapper for bash_security_hook that passes project_dir via context
     async def bash_hook_with_context(input_data, tool_use_id=None, context=None):
