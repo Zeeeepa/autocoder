@@ -277,7 +277,7 @@ class AgentProcessManager:
                 ).all()
                 if stuck:
                     for f in stuck:
-                        f.in_progress = False
+                        f.in_progress = False  # type: ignore[assignment]
                     session.commit()
                     logger.info(
                         "Cleaned up %d stuck feature(s) for %s",
@@ -346,7 +346,7 @@ class AgentProcessManager:
             # Check if process ended
             if self.process and self.process.poll() is not None:
                 exit_code = self.process.returncode
-                if exit_code != 0 and self.status == "running":
+                if exit_code != 0 and self.status in ("running", "pausing", "paused_graceful"):
                     # Check buffered output for auth errors if we haven't detected one yet
                     if not auth_error_detected:
                         combined_output = '\n'.join(output_buffer)
@@ -354,10 +354,16 @@ class AgentProcessManager:
                             for help_line in AUTH_ERROR_HELP.strip().split('\n'):
                                 await self._broadcast_output(help_line)
                     self.status = "crashed"
-                elif self.status == "running":
+                elif self.status in ("running", "pausing", "paused_graceful"):
                     self.status = "stopped"
                 self._cleanup_stale_features()
                 self._remove_lock()
+                # Clean up drain signal file if present
+                try:
+                    from autoforge_paths import get_pause_drain_path
+                    get_pause_drain_path(self.project_dir).unlink(missing_ok=True)
+                except Exception:
+                    pass
 
     async def start(
         self,

@@ -61,7 +61,7 @@ THOUGHT_PATTERNS = [
     (re.compile(r'(?:Testing|Verifying|Running tests|Validating)\s+(.+)', re.I), 'testing'),
     (re.compile(r'(?:Error|Failed|Cannot|Unable to|Exception)\s+(.+)', re.I), 'struggling'),
     # Test results
-    (re.compile(r'(?:PASS|passed|success)', re.I), 'success'),
+    (re.compile(r'(?:PASS|passed|success)', re.I), 'testing'),
     (re.compile(r'(?:FAIL|failed|error)', re.I), 'struggling'),
 ]
 

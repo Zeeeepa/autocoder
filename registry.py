@@ -743,7 +743,7 @@ def get_effective_sdk_env() -> dict[str, str]:
                 sdk_env[var] = value
         return sdk_env
 
-    sdk_env: dict[str, str] = {}
+    sdk_env = {}
 
     # Explicitly clear credentials that could leak from the server process env.
     # For providers using ANTHROPIC_AUTH_TOKEN (GLM, Custom), clear ANTHROPIC_API_KEY.
